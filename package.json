@@ -1,6 +1,6 @@
 {
     "name": "protoflex",
-    "version": "0.1.0",
+    "version": "0.1.1",
     "description": "Arbitrary Protobuf (de-)serializing library",
     "author": "teidesu",
     "license": "MIT",
@@ -14,6 +14,7 @@
     },
     "files": [
         "src/",
+        "dist",
         "utils.js",
         "utils.d.ts"
     ],

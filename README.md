@@ -1,4 +1,8 @@
 # Protoflex
+![downloads](https://img.shields.io/npm/dm/protoflex) 
+![version](https://img.shields.io/npm/v/protoflex) 
+![.min.js file size](https://img.shields.io/github/size/teidesu/protoflex/dist/protoflex.min.js)
+
 Protoflex is a modern JavaScript library for working with arbitrary Protobuf data.
 
 Online REPL: [here](https://teidesu.github.io/protoflex/repl)

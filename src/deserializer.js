@@ -41,7 +41,6 @@ class Deserializer {
         let header = this._parseHeader()
         let type = header.type
         let key = header.key
-        let start = this.offset
         let func = {
             0: lazyReadVarint,
             1: readFixed64,
