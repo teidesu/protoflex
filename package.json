@@ -9,7 +9,7 @@
         "build": "npm run test && npm run build:lib && npm run build:doc && npm run build:repl",
         "test": "mocha test/**/*.spec.js",
         "build:lib": "webpack",
-        "build:doc": "typedoc --out docs/api --includeDeclarations --excludeExternals --readme API.md --name protoflex src/index.d.ts src/utils.d.ts",
+        "build:doc": "typedoc --out docs/api --includeDeclarations --excludeExternals --readme API.md --name protoflex src/index.d.ts src/utils.d.ts && touch ./docs/.nojekyll",
         "build:repl": "npm run build --prefix repl"
     },
     "files": [
