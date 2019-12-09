@@ -15,8 +15,7 @@
     "files": [
         "src/",
         "utils.js",
-        "utils.d.ts",
-        "repl/src/dump.css"
+        "utils.d.ts"
     ],
     "dependencies": {
         "long": "^4.0.0",
