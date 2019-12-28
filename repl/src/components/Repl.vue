@@ -102,8 +102,6 @@ export default {
                 this.history.unshift(this.input)
                 this.historyPosition = -1
                 this.input = ''
-
-                setTimeout(() => this.$refs.output.scrollTop = this.$refs.output.scrollHeight, 10)
             }
         },
         runCode (expr) {
@@ -151,6 +149,9 @@ export default {
             let i = v.match(/\n/g)
             this.inputLines = (i || []).length
         },
+        items () {
+            setTimeout(() => this.$refs.output.scrollTop = this.$refs.output.scrollHeight, 10)
+        }
     },
     mounted () {
         this.resetSandbox()
@@ -257,6 +258,9 @@ export default {
 
 .repl-history-item:first-child {
     padding-top: 12px;
+}
+.repl-history-item:last-child {
+    padding-bottom: 18px;
 }
 
 .repl-input__field textarea {
