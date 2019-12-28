@@ -3,7 +3,7 @@
         <h2 class="page-title">Protoflex REPL</h2>
         <div class="columns">
             <div class="column" v-show="left">
-                <b-tabs position="is-centered">
+                <b-tabs position="is-centered" v-model="tab">
                     <b-tab-item icon="book-open-outline" label="Parsing">
                         <b-field label="Protobuf data">
                             <b-input type="textarea" class="is-family-monospace" v-model="inputData"/>
@@ -20,9 +20,9 @@
                         <b-button @click="jsonToPB">To Protobuf message</b-button>
                         <b-button @click="jsonToHex">To Hex</b-button>
                         <b-button @click="jsonToFile">Download as binary</b-button>
-                        <codemirror
+                        <CodeMirror
                                 v-model="inputJson"
-                                :options="{ mode: 'text/javascript' }"
+                                :options="cmOptions"
                                 class="json-input"
                                 ref="editor"
                         />
@@ -83,12 +83,28 @@ export default {
     name: 'app',
     components: {
         Repl,
+        CodeMirror: () => import('./cm-bundle')
     },
     data: () => ({
         PB,
         inputData: '',
         inputJson: '$ = {\n  \n};',
+        tab: 0,
         left: true,
+        cmOptions: {
+            mode: 'text/javascript',
+            theme: 'default',
+            viewportMargin: Infinity,
+            lint: true,
+            lineNumbers: true,
+            foldGutter: true,
+            gutters: ["CodeMirror-linenumbers", "CodeMirror-foldgutter"],
+            autoCloseBrackets: true,
+            styleActiveLine: true,
+            extraKeys: {
+                'Ctrl-Space': 'autocomplete'
+            }
+        }
     }),
     methods: {
         asHex () {
@@ -184,6 +200,9 @@ export default {
         left (v) {
             localStorage.left = v
         },
+        tab () { // idk
+            setTimeout(() => this.$refs.editor.cminstance.refresh(), 100)
+        }
     },
     mounted () {
         PB.OutputMessage.prototype._dump = dumper._dump
@@ -224,6 +243,7 @@ export default {
 
 .json-input {
     height: auto;
+    font-size: 12px;
     margin-top: 4px;
 }
 
