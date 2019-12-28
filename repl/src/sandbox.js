@@ -9,6 +9,7 @@ class Sandbox {
 
         this.document.open()
         this.document.write(`<script>var MSIE/*@cc_on =1@*/;_e=MSIE?this:{eval:function(s){return window.eval(s)}}</script>`)
+        this.document.close()
         this._eval = this.window._e
         delete this.window._e
 
