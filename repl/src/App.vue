@@ -102,7 +102,14 @@ export default {
             autoCloseBrackets: true,
             styleActiveLine: true,
             extraKeys: {
-                'Ctrl-Space': 'autocomplete'
+                'Ctrl-Space': 'autocomplete',
+                Tab (cm) {
+                    if (cm.somethingSelected()) {
+                        cm.indentSelection('add')
+                    } else {
+                        cm.replaceSelection(Array(cm.getOption('indentUnit') + 1).join(' '), 'end', '+input')
+                    }
+                },
             }
         }
     }),

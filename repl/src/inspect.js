@@ -7,11 +7,11 @@ if (typeof Symbol !== 'undefined') {
 }
 
 export default function inspect (obj) {
-    if (typeof obj === 'object' && 'toJSON' in obj) {
+    if (obj && typeof obj === 'object' && 'toJSON' in obj) {
         obj = obj.toJSON()
     }
-    if (sym && obj[sym]) {
+    if (obj && sym && obj[sym]) {
         obj = obj[sym]()
     }
-    return typeof obj === 'string' ? obj : util.inspect(obj, { compact: false, depth: Infinity })
+    return typeof obj === 'string' ? obj || '<empty string>' : util.inspect(obj, { compact: false, depth: 3 })
 }

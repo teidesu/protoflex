@@ -112,9 +112,7 @@ export default {
 
             try {
                 let res = this.sandbox.evaluate(expr)
-                if (res) {
-                    this.$set(item, 'result', inspect(res))
-                }
+                this.$set(item, 'result', inspect(res))
                 this.sandbox.window.$_ = res
             } catch (e) {
                 this.$set(item, 'error', e)
