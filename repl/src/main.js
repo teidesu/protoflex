@@ -2,8 +2,12 @@ import Vue from 'vue'
 import App from './App.vue'
 import Buefy from 'buefy'
 import 'buefy/dist/buefy.css'
-import hljs from 'highlight.js'
+
+import hljs from 'highlight.js/lib/highlight'
+import javascript from 'highlight.js/lib/languages/javascript'
 import 'highlight.js/styles/atom-one-light.css'
+
+hljs.registerLanguage('javascript', javascript)
 
 Vue.directive('hljs', {
     deep: true,
