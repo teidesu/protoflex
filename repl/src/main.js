@@ -7,6 +7,25 @@ import hljs from 'highlight.js/lib/highlight'
 import javascript from 'highlight.js/lib/languages/javascript'
 import 'highlight.js/styles/atom-one-light.css'
 
+import CM from 'codemirror/src/codemirror'
+import VueCodemirror from 'vue-codemirror'
+import 'codemirror/lib/codemirror.css'
+import 'codemirror/mode/javascript/javascript'
+import 'codemirror/addon/edit/closebrackets'
+import 'codemirror/addon/fold/foldgutter'
+import 'codemirror/addon/fold/foldgutter.css'
+import 'codemirror/addon/hint/show-hint'
+import 'codemirror/addon/hint/show-hint.css'
+import 'codemirror/addon/hint/javascript-hint'
+import 'codemirror/addon/lint/lint'
+import 'codemirror/addon/lint/lint.css'
+import 'codemirror/addon/lint/javascript-lint'
+import 'codemirror/addon/fold/brace-fold'
+import 'codemirror/addon/selection/active-line'
+import { JSHINT } from 'jshint'
+
+window.JSHINT = JSHINT
+
 hljs.registerLanguage('javascript', javascript)
 
 Vue.directive('hljs', {
@@ -36,7 +55,21 @@ Vue.directive('hljs', {
 })
 
 Vue.use(Buefy)
-
+Vue.use(VueCodemirror, {
+    options: {
+        theme: 'default',
+        viewportMargin: Infinity,
+        lint: true,
+        lineNumbers: true,
+        foldGutter: true,
+        gutters: ["CodeMirror-linenumbers", "CodeMirror-foldgutter"],
+        autoCloseBrackets: true,
+        styleActiveLine: true,
+        extraKeys: {
+            'Ctrl-Space': 'autocomplete'
+        }
+    }
+})
 
 Vue.config.productionTip = false
 

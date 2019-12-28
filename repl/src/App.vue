@@ -20,11 +20,9 @@
                         <b-button @click="jsonToPB">To Protobuf message</b-button>
                         <b-button @click="jsonToHex">To Hex</b-button>
                         <b-button @click="jsonToFile">Download as binary</b-button>
-                        <Ace
+                        <codemirror
                                 v-model="inputJson"
-                                @init="aceInit"
-                                lang="javascript"
-                                theme="chrome"
+                                :options="{ mode: 'text/javascript' }"
                                 class="json-input"
                                 ref="editor"
                         />
@@ -32,7 +30,8 @@
                 </b-tabs>
                 <b-message type="is-info">
                     <b>Common</b>
-                    <p>You can use REPL without using left pane, Protoflex is in <code>PB</code> and utils are in <code>PB.utils</code></p>
+                    <p>You can use REPL without using left pane, Protoflex is in <code>PB</code> and utils are in <code>PB.utils</code>
+                    </p>
                     <b>Parsing</b>
                     <p>Your object is in <code>$</code>, to get full info use <code>$.dump()</code></p>
                     <b>Creating</b>
@@ -53,10 +52,10 @@
 
 <script>
 // code is mess but idc
-import Ace from 'vue2-ace-editor'
 import PB from '../..'
 
 import protoflexUtils from '../../utils'
+
 PB.utils = protoflexUtils
 
 import Repl from './components/Repl'
@@ -84,7 +83,6 @@ export default {
     name: 'app',
     components: {
         Repl,
-        Ace,
     },
     data: () => ({
         PB,
@@ -125,15 +123,6 @@ export default {
             } catch (e) {
                 this.$set(it, 'error', e)
             }
-        },
-        aceInit () {
-            require('brace/ext/language_tools')
-            require('brace/mode/javascript')
-            require('brace/theme/chrome')
-
-            this.$refs.editor.editor.session.setOptions({
-                tabSize: 2,
-            })
         },
         jsonToPB () {
             let it = {
@@ -194,7 +183,7 @@ export default {
     watch: {
         left (v) {
             localStorage.left = v
-        }
+        },
     },
     mounted () {
         PB.OutputMessage.prototype._dump = dumper._dump
@@ -234,11 +223,7 @@ export default {
 }
 
 .json-input {
-    height: 50vh !important;
-    max-height: 50vh;
-    width: 35vw !important;
-    max-width: 35vw;
-
+    height: auto;
     margin-top: 4px;
 }
 
@@ -247,7 +232,7 @@ export default {
 }
 
 .repl-full-width {
-    width: 100%!important;
-    max-width: 100%!important;
+    width: 100% !important;
+    max-width: 100% !important;
 }
 </style>
