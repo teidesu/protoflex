@@ -74,8 +74,10 @@
 								<li class="tsd-kind-function tsd-parent-kind-external-module"><a href="_utils_d_.html#frombytearray" class="tsd-kind-icon">from<wbr>Byte<wbr>Array</a></li>
 								<li class="tsd-kind-function tsd-parent-kind-external-module"><a href="_utils_d_.html#fromhex" class="tsd-kind-icon">from<wbr>Hex</a></li>
 								<li class="tsd-kind-function tsd-parent-kind-external-module"><a href="_utils_d_.html#keybymultiple" class="tsd-kind-icon">key<wbr>ByMultiple</a></li>
+								<li class="tsd-kind-function tsd-parent-kind-external-module"><a href="_utils_d_.html#readvarint" class="tsd-kind-icon">read<wbr>Varint</a></li>
 								<li class="tsd-kind-function tsd-parent-kind-external-module"><a href="_utils_d_.html#tobytearray" class="tsd-kind-icon">to<wbr>Byte<wbr>Array</a></li>
 								<li class="tsd-kind-function tsd-parent-kind-external-module"><a href="_utils_d_.html#tohex" class="tsd-kind-icon">to<wbr>Hex</a></li>
+								<li class="tsd-kind-function tsd-parent-kind-external-module"><a href="_utils_d_.html#writevarint" class="tsd-kind-icon">write<wbr>Varint</a></li>
 							</ul>
 						</section>
 					</div>
@@ -93,7 +95,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/teidesu/protoflex/blob/82b0b61/src/utils.d.ts#L24">utils.d.ts:24</a></li>
+									<li>Defined in <a href="https://github.com/teidesu/protoflex/blob/7243524/src/utils.d.ts#L26">utils.d.ts:26</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -137,7 +139,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/teidesu/protoflex/blob/82b0b61/src/utils.d.ts#L41">utils.d.ts:41</a></li>
+									<li>Defined in <a href="https://github.com/teidesu/protoflex/blob/7243524/src/utils.d.ts#L43">utils.d.ts:43</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -169,7 +171,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/teidesu/protoflex/blob/82b0b61/src/utils.d.ts#L7">utils.d.ts:7</a></li>
+									<li>Defined in <a href="https://github.com/teidesu/protoflex/blob/7243524/src/utils.d.ts#L9">utils.d.ts:9</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -202,6 +204,38 @@
 					</ul>
 				</section>
 				<section class="tsd-panel tsd-member tsd-kind-function tsd-parent-kind-external-module">
+					<a name="readvarint" class="tsd-anchor"></a>
+					<h3>read<wbr>Varint</h3>
+					<ul class="tsd-signatures tsd-kind-function tsd-parent-kind-external-module">
+						<li class="tsd-signature tsd-kind-icon">read<wbr>Varint<span class="tsd-signature-symbol">(</span>bytes<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">number</span><span class="tsd-signature-symbol">[]</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">Buffer</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">Uint8Array</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Long</span></li>
+					</ul>
+					<ul class="tsd-descriptions">
+						<li class="tsd-description">
+							<aside class="tsd-sources">
+								<ul>
+									<li>Defined in <a href="https://github.com/teidesu/protoflex/blob/7243524/src/utils.d.ts#L51">utils.d.ts:51</a></li>
+								</ul>
+							</aside>
+							<div class="tsd-comment tsd-typography">
+								<div class="lead">
+									<p>Read raw varint (without header etc.) from buffer</p>
+								</div>
+							</div>
+							<h4 class="tsd-parameters-title">Parameters</h4>
+							<ul class="tsd-parameters">
+								<li>
+									<h5>bytes: <span class="tsd-signature-type">number</span><span class="tsd-signature-symbol">[]</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">Buffer</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">Uint8Array</span></h5>
+									<div class="tsd-comment tsd-typography">
+										<p>Array containing a varint</p>
+									</div>
+								</li>
+							</ul>
+							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">Long</span></h4>
+							<p>Parsed varing as a Long</p>
+						</li>
+					</ul>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-function tsd-parent-kind-external-module">
 					<a name="tobytearray" class="tsd-anchor"></a>
 					<h3>to<wbr>Byte<wbr>Array</h3>
 					<ul class="tsd-signatures tsd-kind-function tsd-parent-kind-external-module">
@@ -211,7 +245,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/teidesu/protoflex/blob/82b0b61/src/utils.d.ts#L14">utils.d.ts:14</a></li>
+									<li>Defined in <a href="https://github.com/teidesu/protoflex/blob/7243524/src/utils.d.ts#L16">utils.d.ts:16</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -242,7 +276,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/teidesu/protoflex/blob/82b0b61/src/utils.d.ts#L33">utils.d.ts:33</a></li>
+									<li>Defined in <a href="https://github.com/teidesu/protoflex/blob/7243524/src/utils.d.ts#L35">utils.d.ts:35</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -262,6 +296,38 @@
 							</ul>
 							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">string</span></h4>
 							<p>Hexadecimal string</p>
+						</li>
+					</ul>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-function tsd-parent-kind-external-module">
+					<a name="writevarint" class="tsd-anchor"></a>
+					<h3>write<wbr>Varint</h3>
+					<ul class="tsd-signatures tsd-kind-function tsd-parent-kind-external-module">
+						<li class="tsd-signature tsd-kind-icon">write<wbr>Varint<span class="tsd-signature-symbol">(</span>number<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">number</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">Long</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">number</span><span class="tsd-signature-symbol">[]</span></li>
+					</ul>
+					<ul class="tsd-descriptions">
+						<li class="tsd-description">
+							<aside class="tsd-sources">
+								<ul>
+									<li>Defined in <a href="https://github.com/teidesu/protoflex/blob/7243524/src/utils.d.ts#L59">utils.d.ts:59</a></li>
+								</ul>
+							</aside>
+							<div class="tsd-comment tsd-typography">
+								<div class="lead">
+									<p>Write number/Long to a raw varint</p>
+								</div>
+							</div>
+							<h4 class="tsd-parameters-title">Parameters</h4>
+							<ul class="tsd-parameters">
+								<li>
+									<h5>number: <span class="tsd-signature-type">number</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">Long</span></h5>
+									<div class="tsd-comment tsd-typography">
+										<p>Value to be converted to a varint</p>
+									</div>
+								</li>
+							</ul>
+							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">number</span><span class="tsd-signature-symbol">[]</span></h4>
+							<p>Bytes containing value as a varint</p>
 						</li>
 					</ul>
 				</section>
@@ -293,10 +359,16 @@
 						<a href="_utils_d_.html#keybymultiple" class="tsd-kind-icon">key<wbr>ByMultiple</a>
 					</li>
 					<li class=" tsd-kind-function tsd-parent-kind-external-module">
+						<a href="_utils_d_.html#readvarint" class="tsd-kind-icon">read<wbr>Varint</a>
+					</li>
+					<li class=" tsd-kind-function tsd-parent-kind-external-module">
 						<a href="_utils_d_.html#tobytearray" class="tsd-kind-icon">to<wbr>Byte<wbr>Array</a>
 					</li>
 					<li class=" tsd-kind-function tsd-parent-kind-external-module">
 						<a href="_utils_d_.html#tohex" class="tsd-kind-icon">to<wbr>Hex</a>
+					</li>
+					<li class=" tsd-kind-function tsd-parent-kind-external-module">
+						<a href="_utils_d_.html#writevarint" class="tsd-kind-icon">write<wbr>Varint</a>
 					</li>
 				</ul>
 			</nav>

@@ -91,7 +91,7 @@ return /******/ (function(modules) { // webpackBootstrap
 /******/
 /******/
 /******/ 	// Load entry module and return exports
-/******/ 	return __webpack_require__(__webpack_require__.s = 8);
+/******/ 	return __webpack_require__(__webpack_require__.s = 9);
 /******/ })
 /************************************************************************/
 /******/ ([
@@ -1485,7 +1485,14 @@ Long.fromBytesBE = function fromBytesBE(bytes, unsigned) {
 
 /***/ }),
 /* 2 */
-/***/ (function(module, exports) {
+/***/ (function(module, exports, __webpack_require__) {
+
+var _require = __webpack_require__(4),
+    readVarint = _require.readVarint;
+
+var _require2 = __webpack_require__(7),
+    writeNumberVarint = _require2.writeNumberVarint,
+    writeLongVarint = _require2.writeLongVarint;
 
 function keyByMultiple(arr, key) {
   var ret = {};
@@ -1596,8 +1603,30 @@ function fromByteArray(bytes) {
   return out.join('');
 }
 
+function _readVarint(bytes) {
+  return readVarint(0, bytes).toLong();
+}
+
+function writeVarint(number) {
+  var ret = [];
+  var obj = {
+    data: ret,
+    pos: 0
+  };
+
+  if (typeof number === 'number') {
+    writeNumberVarint.call(obj, number);
+  } else {
+    writeLongVarint.call(obj, number);
+  }
+
+  return ret;
+}
+
 module.exports = {
   keyByMultiple: keyByMultiple,
+  readVarint: _readVarint,
+  writeVarint: writeVarint,
   toByteArray: toByteArray,
   fromByteArray: fromByteArray,
   toHex: toHex,
@@ -1747,6 +1776,118 @@ module.exports = LongBits;
 
 /***/ }),
 /* 4 */
+/***/ (function(module, exports, __webpack_require__) {
+
+var LongBits = __webpack_require__(3);
+
+function lazyReadVarint() {
+  var offset = this.offset;
+
+  while (this.data[this.offset++] & 0x80) {}
+
+  return offset;
+}
+
+function readVarint(offset, data) {
+  var length = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : data.length;
+  var ret = new LongBits(0, 0);
+  var i = 0;
+
+  if (length - offset > 4) {
+    for (; i < 4; ++i) {
+      ret.lo = (ret.lo | (data[offset] & 0x7f) << i * 7) >>> 0;
+
+      if (data[offset++] < 0x80) {
+        return ret;
+      }
+    }
+
+    ret.lo = (ret.lo | (data[offset] & 0x7f) << 28) >>> 0;
+    ret.hi = (ret.hi | (data[offset] & 0x7f) >> 4) >>> 0;
+
+    if (data[offset++] < 0x80) {
+      return ret;
+    }
+
+    i = 0;
+  } else {
+    for (; i < 3; ++i) {
+      if (offset >= length) {
+        throw RangeError('Unexpected end while reading varint');
+      }
+
+      ret.lo = (ret.lo | (data[offset] & 0x7f) << i * 7) >>> 0;
+
+      if (data[offset++] < 0x80) {
+        return ret;
+      }
+    }
+
+    ret.lo = (ret.lo | (data[offset] & 0x7f) << i * 7) >>> 0;
+    return ret;
+  }
+
+  if (length - offset > 4) {
+    for (; i < 5; ++i) {
+      ret.hi = (ret.hi | (data[offset] & 0x7f) << i * 7 + 3) >>> 0;
+
+      if (data[offset++] < 0x80) {
+        return ret;
+      }
+    }
+  } else {
+    for (; i < 5; ++i) {
+      if (offset >= length) {
+        throw RangeError('Unexpected end while reading varint');
+      }
+
+      ret.hi = (ret.hi | (data[offset] & 0x7f) << i * 7 + 3) >>> 0;
+
+      if (data[offset++] < 0x80) {
+        return ret;
+      }
+    }
+  }
+
+  throw Error('Invalid varint encoding');
+}
+
+function fullyReadVarint() {
+  var offset = lazyReadVarint.call(this);
+  return readVarint(offset, this.data, this.length);
+}
+
+function readFixed32() {
+  return this.data[this.offset++] | this.data[this.offset++] << 8 | this.data[this.offset++] << 16 | this.data[this.offset++] << 24;
+}
+
+function readFixed64() {
+  var lo = readFixed32.call(this);
+  var hi = readFixed32.call(this);
+  return new LongBits(lo, hi);
+}
+
+function readLengthDelimited() {
+  var len = fullyReadVarint.call(this).toNumber(true);
+  var start = this.offset;
+  return {
+    start: start,
+    end: this.offset += len,
+    length: len
+  };
+}
+
+module.exports = {
+  readVarint: readVarint,
+  readFixed32: readFixed32,
+  readFixed64: readFixed64,
+  readLengthDelimited: readLengthDelimited,
+  lazyReadVarint: lazyReadVarint,
+  fullyReadVarint: fullyReadVarint
+};
+
+/***/ }),
+/* 5 */
 /***/ (function(module, exports, __webpack_require__) {
 
 function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
@@ -2045,7 +2186,7 @@ module.exports = {
 };
 
 /***/ }),
-/* 5 */
+/* 6 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var _require = __webpack_require__(0),
@@ -2218,119 +2359,87 @@ module.exports = {
 };
 
 /***/ }),
-/* 6 */
+/* 7 */
 /***/ (function(module, exports, __webpack_require__) {
+
+var Long = __webpack_require__(1);
 
 var LongBits = __webpack_require__(3);
 
-function lazyReadVarint() {
-  var offset = this.offset;
-
-  while (this.data[this.offset++] & 0x80) {}
-
-  return offset;
-}
-
-function readVarint(offset, data) {
-  var length = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : data.length;
-  var ret = new LongBits(0, 0);
-  var i = 0;
-
-  if (length - offset > 4) {
-    for (; i < 4; ++i) {
-      ret.lo = (ret.lo | (data[offset] & 0x7f) << i * 7) >>> 0;
-
-      if (data[offset++] < 0x80) {
-        return ret;
-      }
-    }
-
-    ret.lo = (ret.lo | (data[offset] & 0x7f) << 28) >>> 0;
-    ret.hi = (ret.hi | (data[offset] & 0x7f) >> 4) >>> 0;
-
-    if (data[offset++] < 0x80) {
-      return ret;
-    }
-
-    i = 0;
-  } else {
-    for (; i < 3; ++i) {
-      if (offset >= length) {
-        throw RangeError('Unexpected end while reading varint');
-      }
-
-      ret.lo = (ret.lo | (data[offset] & 0x7f) << i * 7) >>> 0;
-
-      if (data[offset++] < 0x80) {
-        return ret;
-      }
-    }
-
-    ret.lo = (ret.lo | (data[offset] & 0x7f) << i * 7) >>> 0;
-    return ret;
+function writeNumberVarint(val) {
+  if (val === 0) {
+    this.data[this.pos] = val;
   }
 
-  if (length - offset > 4) {
-    for (; i < 5; ++i) {
-      ret.hi = (ret.hi | (data[offset] & 0x7f) << i * 7 + 3) >>> 0;
+  if (val < 0) {
+    // filling 9 bytes
+    for (var i = 0; i < 9; i++) {
+      this.data[this.pos++] = val & 0x7f | 0x80;
+      val >>= 7;
+    } // and 10th byte: sign
 
-      if (data[offset++] < 0x80) {
-        return ret;
-      }
-    }
+
+    this.data[this.pos++] = 0x1;
   } else {
-    for (; i < 5; ++i) {
-      if (offset >= length) {
-        throw RangeError('Unexpected end while reading varint');
-      }
-
-      ret.hi = (ret.hi | (data[offset] & 0x7f) << i * 7 + 3) >>> 0;
-
-      if (data[offset++] < 0x80) {
-        return ret;
-      }
+    while (val > 127) {
+      this.data[this.pos++] = val & 0x7f | 0x80;
+      val >>>= 7;
     }
+
+    this.data[this.pos++] = val;
+  }
+}
+
+function writeLongVarint(val) {
+  if (val instanceof Long) {
+    val = LongBits.from(val);
   }
 
-  throw Error('Invalid varint encoding');
+  while (val.hi) {
+    this.data[this.pos++] = val.lo & 127 | 128;
+    val.lo = (val.lo >>> 7 | val.hi << 25) >>> 0;
+    val.hi >>>= 7;
+  }
+
+  while (val.lo > 0x7f) {
+    this.data[this.pos++] = val.lo & 127 | 128;
+    val.lo = val.lo >>> 7;
+  }
+
+  this.data[this.pos++] = val.lo;
 }
 
-function fullyReadVarint() {
-  var offset = lazyReadVarint.call(this);
-  return readVarint(offset, this.data, this.length);
+function writeFixed32(val) {
+  this.data[this.pos++] = val & 0xff;
+  this.data[this.pos++] = val >>> 8 & 0xff;
+  this.data[this.pos++] = val >>> 16 & 0xff;
+  this.data[this.pos++] = val >>> 24 & 0xff;
 }
 
-function readFixed32() {
-  return this.data[this.offset++] | this.data[this.offset++] << 8 | this.data[this.offset++] << 16 | this.data[this.offset++] << 24;
+function writeFixed64(val) {
+  var bits = LongBits.from(val);
+  writeFixed32.call(this, bits.lo);
+  writeFixed32.call(this, bits.hi);
 }
 
-function readFixed64() {
-  var lo = readFixed32.call(this);
-  var hi = readFixed32.call(this);
-  return new LongBits(lo, hi);
-}
+function writeLengthDelimited(val) {
+  writeNumberVarint.call(this, val.length);
 
-function readLengthDelimited() {
-  var len = fullyReadVarint.call(this).toNumber(true);
-  var start = this.offset;
-  return {
-    start: start,
-    end: this.offset += len,
-    length: len
-  };
+  for (var i = 0; i < val.length; i++) {
+    this.data[this.pos++] = val[i];
+  }
 }
 
 module.exports = {
-  readVarint: readVarint,
-  readFixed32: readFixed32,
-  readFixed64: readFixed64,
-  readLengthDelimited: readLengthDelimited,
-  lazyReadVarint: lazyReadVarint,
-  fullyReadVarint: fullyReadVarint
+  writeLongVarint: writeLongVarint,
+  writeNumberVarint: writeNumberVarint,
+  writeFixed32: writeFixed32,
+  writeFixed64: writeFixed64,
+  writeLengthDelimited: writeLengthDelimited
 };
 
 /***/ }),
-/* 7 */
+/* 8 */
 /***/ (function(module, exports, __webpack_require__) {
 
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
@@ -2342,7 +2451,7 @@ function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _d
 var _require = __webpack_require__(0),
     WIRE_TYPES_NAMES = _require.WIRE_TYPES_NAMES;
 
-var _require2 = __webpack_require__(6),
+var _require2 = __webpack_require__(4),
     readFixed32 = _require2.readFixed32,
     readFixed64 = _require2.readFixed64,
     readLengthDelimited = _require2.readLengthDelimited,
@@ -2392,7 +2501,6 @@ function () {
 
       var type = header.type;
       var key = header.key;
-      var start = this.offset;
       var func = {
         0: lazyReadVarint,
         1: readFixed64,
@@ -2428,16 +2536,16 @@ function () {
 module.exports = Deserializer;
 
 /***/ }),
-/* 8 */
+/* 9 */
 /***/ (function(module, exports, __webpack_require__) {
 
-var OutputMessage = __webpack_require__(9);
+var OutputMessage = __webpack_require__(10);
 
-var InputMessage = __webpack_require__(10);
+var InputMessage = __webpack_require__(11);
 
-var Deserializer = __webpack_require__(7);
+var Deserializer = __webpack_require__(8);
 
-var ja = __webpack_require__(4);
+var ja = __webpack_require__(5);
 
 var utils = __webpack_require__(2);
 
@@ -2488,7 +2596,7 @@ module.exports = {
 };
 
 /***/ }),
-/* 9 */
+/* 10 */
 /***/ (function(module, exports, __webpack_require__) {
 
 function _typeof(obj) { if (typeof Symbol === "function" && typeof Symbol.iterator === "symbol") { _typeof = function _typeof(obj) { return typeof obj; }; } else { _typeof = function _typeof(obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }; } return _typeof(obj); }
@@ -2507,7 +2615,7 @@ function _defineProperties(target, props) { for (var i = 0; i < props.length; i+
 
 function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _defineProperties(Constructor.prototype, protoProps); if (staticProps) _defineProperties(Constructor, staticProps); return Constructor; }
 
-var _require = __webpack_require__(5),
+var _require = __webpack_require__(6),
     joinDouble = _require.joinDouble,
     joinFloat = _require.joinFloat,
     zigZagDecode = _require.zigZagDecode;
@@ -2521,19 +2629,19 @@ var _require3 = __webpack_require__(0),
     VARINT_TYPES = _require3.VARINT_TYPES,
     PACKABLE_TYPES = _require3.PACKABLE_TYPES;
 
-var _require4 = __webpack_require__(6),
+var _require4 = __webpack_require__(4),
     readVarint = _require4.readVarint,
     readFixed32 = _require4.readFixed32,
     readFixed64 = _require4.readFixed64,
     lazyReadVarint = _require4.lazyReadVarint;
 
-var Deserializer = __webpack_require__(7);
+var Deserializer = __webpack_require__(8);
 
 var LongBits = __webpack_require__(3);
 
 var Long = __webpack_require__(1);
 
-var _require5 = __webpack_require__(4),
+var _require5 = __webpack_require__(5),
     outputToJson = _require5.outputToJson;
 
 var OutputMessage =
@@ -3065,7 +3173,7 @@ if (typeof Symbol !== 'undefined') {
 module.exports = OutputMessage;
 
 /***/ }),
-/* 10 */
+/* 11 */
 /***/ (function(module, exports, __webpack_require__) {
 
 function _toConsumableArray(arr) { return _arrayWithoutHoles(arr) || _iterableToArray(arr) || _nonIterableSpread(); }
@@ -3094,9 +3202,9 @@ var _require = __webpack_require__(0),
     MAX_UINT32 = _require.MAX_UINT32,
     MAX_UINT64 = _require.MAX_UINT64;
 
-var Serializer = __webpack_require__(11);
+var Serializer = __webpack_require__(12);
 
-var ja = __webpack_require__(4);
+var ja = __webpack_require__(5);
 
 var _require2 = __webpack_require__(2),
     _toHex = _require2.toHex;
@@ -3558,7 +3666,7 @@ if (typeof Symbol !== 'undefined') {
 module.exports = InputMessage;
 
 /***/ }),
-/* 11 */
+/* 12 */
 /***/ (function(module, exports, __webpack_require__) {
 
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
@@ -3567,7 +3675,7 @@ function _defineProperties(target, props) { for (var i = 0; i < props.length; i+
 
 function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _defineProperties(Constructor.prototype, protoProps); if (staticProps) _defineProperties(Constructor, staticProps); return Constructor; }
 
-var _require = __webpack_require__(12),
+var _require = __webpack_require__(7),
     writeNumberVarint = _require.writeNumberVarint,
     writeLongVarint = _require.writeLongVarint,
     writeFixed64 = _require.writeFixed64,
@@ -3577,7 +3685,7 @@ var _require = __webpack_require__(12),
 var _require2 = __webpack_require__(2),
     toByteArray = _require2.toByteArray;
 
-var _require3 = __webpack_require__(5),
+var _require3 = __webpack_require__(6),
     splitFloat = _require3.splitFloat,
     splitDouble = _require3.splitDouble;
 
@@ -3802,86 +3910,6 @@ function () {
 }();
 
 module.exports = Serializer;
-
-/***/ }),
-/* 12 */
-/***/ (function(module, exports, __webpack_require__) {
-
-var Long = __webpack_require__(1);
-
-var LongBits = __webpack_require__(3);
-
-function writeNumberVarint(val) {
-  if (val === 0) {
-    this.data[this.pos] = val;
-  }
-
-  if (val < 0) {
-    // filling 9 bytes
-    for (var i = 0; i < 9; i++) {
-      this.data[this.pos++] = val & 0x7f | 0x80;
-      val >>= 7;
-    } // and 10th byte: sign
-
-
-    this.data[this.pos++] = 0x1;
-  } else {
-    while (val > 127) {
-      this.data[this.pos++] = val & 0x7f | 0x80;
-      val >>>= 7;
-    }
-
-    this.data[this.pos++] = val;
-  }
-}
-
-function writeLongVarint(val) {
-  if (val instanceof Long) {
-    val = LongBits.from(val);
-  }
-
-  while (val.hi) {
-    this.data[this.pos++] = val.lo & 127 | 128;
-    val.lo = (val.lo >>> 7 | val.hi << 25) >>> 0;
-    val.hi >>>= 7;
-  }
-
-  while (val.lo > 0x7f) {
-    this.data[this.pos++] = val.lo & 127 | 128;
-    val.lo = val.lo >>> 7;
-  }
-
-  this.data[this.pos++] = val.lo;
-}
-
-function writeFixed32(val) {
-  this.data[this.pos++] = val & 0xff;
-  this.data[this.pos++] = val >>> 8 & 0xff;
-  this.data[this.pos++] = val >>> 16 & 0xff;
-  this.data[this.pos++] = val >>> 24 & 0xff;
-}
-
-function writeFixed64(val) {
-  var bits = LongBits.from(val);
-  writeFixed32.call(this, bits.lo);
-  writeFixed32.call(this, bits.hi);
-}
-
-function writeLengthDelimited(val) {
-  writeNumberVarint.call(this, val.length);
-
-  for (var i = 0; i < val.length; i++) {
-    this.data[this.pos++] = val[i];
-  }
-}
-
-module.exports = {
-  writeLongVarint: writeLongVarint,
-  writeNumberVarint: writeNumberVarint,
-  writeFixed32: writeFixed32,
-  writeFixed64: writeFixed64,
-  writeLengthDelimited: writeLengthDelimited
-};
 
 /***/ })
 /******/ ]);

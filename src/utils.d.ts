@@ -1,3 +1,5 @@
+import * as Long from 'long'
+
 /**
  * Similar to lodash's keyBy function, but creates array for each key
  *
@@ -40,3 +42,18 @@ export function toHex (bytes: number[] | Buffer | Uint8Array | string): string
  */
 export function fromHex (str: string): number[]
 
+/**
+ * Read raw varint (without header etc.) from buffer
+ *
+ * @param bytes  Array containing a varint
+ * @returns  Parsed varing as a Long
+ */
+export function readVarint (bytes: number[] | Buffer | Uint8Array): Long
+
+/**
+ * Write number/Long to a raw varint
+ *
+ * @param number  Value to be converted to a varint
+ * @returns  Bytes containing value as a varint
+ */
+export function writeVarint (number: number | Long): number[]

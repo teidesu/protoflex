@@ -1,3 +1,6 @@
+const { readVarint } = require('./readers')
+const { writeNumberVarint, writeLongVarint } = require('./writers')
+
 function keyByMultiple (arr, key) {
     let ret = {}
     arr.forEach((v) => {
@@ -105,11 +108,34 @@ function fromByteArray (bytes, start = 0, end = bytes.length) {
     return out.join('')
 }
 
+function _readVarint (bytes) {
+    return readVarint(0, bytes).toLong()
+}
+
+function writeVarint (number) {
+    let ret = []
+    let obj = {
+        data: ret,
+        pos: 0
+    }
+
+    if (typeof number === 'number') {
+        writeNumberVarint.call(obj, number)
+    } else {
+        writeLongVarint.call(obj, number)
+    }
+
+    return ret
+}
+
 module.exports = {
     keyByMultiple,
+
+    readVarint: _readVarint,
+    writeVarint,
 
     toByteArray,
     fromByteArray,
     toHex,
-    fromHex
+    fromHex,
 }
