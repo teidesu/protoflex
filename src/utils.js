@@ -1,4 +1,4 @@
-const { readVarint } = require('./readers')
+const { readVarintAndLength, readVarint } = require('./readers')
 const { writeNumberVarint, writeLongVarint } = require('./writers')
 
 function keyByMultiple (arr, key) {
@@ -112,6 +112,12 @@ function _readVarint (bytes, offset = 0) {
     return readVarint(offset, bytes).toLong()
 }
 
+function _readVarintAndLength (bytes, offset = 0) {
+    let ret = readVarintAndLength(offset, bytes)
+    ret[0] = ret[0].toLong()
+    return ret
+}
+
 function writeVarint (number) {
     let ret = []
     let obj = {
@@ -132,6 +138,7 @@ module.exports = {
     keyByMultiple,
 
     readVarint: _readVarint,
+    readVarintAndLength: _readVarintAndLength,
     writeVarint,
 
     toByteArray,

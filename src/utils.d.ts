@@ -47,9 +47,18 @@ export function fromHex (str: string): number[]
  *
  * @param bytes  Array containing a varint
  * @param offset  Number of bytes to skip before reading (default 0)
- * @returns  Parsed varing as a Long
+ * @returns  Parsed varint as a Long
  */
 export function readVarint (bytes: number[] | Buffer | Uint8Array, offset?: number): Long
+
+/**
+ * Read raw varint (without header etc.) from buffer and get its length in bytes
+ *
+ * @param bytes  Array containing a varint
+ * @param offset  Number of bytes to skip before reading (default 0)
+ * @returns  Tuple containing parsed varint and its length in bytes
+ */
+export function readVarintAndLength (bytes: number[] | Buffer | Uint8Array, offset?: number): [Long, number]
 
 /**
  * Write number/Long to a raw varint

@@ -4,6 +4,7 @@ const PB = require('../src/index')
 const { fromHex, fromByteArray } = require('../src/utils')
 const { fullyReadVarint } = require('../src/readers')
 const Long = require('long')
+const { readVarintAndLength } = require('../src/readers')
 
 describe('varints', () => {
     const test = (dat, ret, offy = 0) => {
@@ -43,6 +44,12 @@ describe('varints', () => {
 
     it('should work with unsigned varints', () => {
         test('8a8ab98df69b8ff911', '1293162973122938122')
+    })
+
+    it('should detect varint lengths', () => {
+        let [value, length] = readVarintAndLength(0, fromHex('ac02ffff'))
+        expect(value.toNumber()).to.eq(300)
+        expect(length).to.eq(2)
     })
 })
 

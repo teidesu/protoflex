@@ -7,19 +7,24 @@ function lazyReadVarint () {
 }
 
 function readVarint (offset, data, length = data.length) {
+    return readVarintAndLength(offset, data, length)[0]
+}
+
+function readVarintAndLength (offset, data, length = data.length) {
+    let start = offset
     let ret = new LongBits(0, 0)
     let i = 0
     if (length - offset > 4) {
         for (; i < 4; ++i) {
             ret.lo = (ret.lo | (data[offset] & 0x7f) << i * 7) >>> 0
             if (data[offset++] < 0x80) {
-                return ret
+                return [ret, offset - start]
             }
         }
         ret.lo = (ret.lo | (data[offset] & 0x7f) << 28) >>> 0
         ret.hi = (ret.hi | (data[offset] & 0x7f) >> 4) >>> 0
         if (data[offset++] < 0x80) {
-            return ret
+            return [ret, offset - start]
         }
         i = 0
     } else {
@@ -29,17 +34,17 @@ function readVarint (offset, data, length = data.length) {
             }
             ret.lo = (ret.lo | (data[offset] & 0x7f) << i * 7) >>> 0
             if (data[offset++] < 0x80) {
-                return ret
+                return [ret, offset - start]
             }
         }
         ret.lo = (ret.lo | (data[offset] & 0x7f) << i * 7) >>> 0
-        return ret
+        return [ret, offset - start]
     }
     if (length - offset > 4) {
         for (; i < 5; ++i) {
             ret.hi = (ret.hi | (data[offset] & 0x7f) << i * 7 + 3) >>> 0
             if (data[offset++] < 0x80) {
-                return ret
+                return [ret, offset - start]
             }
         }
     } else {
@@ -49,7 +54,7 @@ function readVarint (offset, data, length = data.length) {
             }
             ret.hi = (ret.hi | (data[offset] & 0x7f) << i * 7 + 3) >>> 0
             if (data[offset++] < 0x80) {
-                return ret
+                return [ret, offset - start]
             }
         }
     }
@@ -87,6 +92,7 @@ function readLengthDelimited () {
 
 module.exports = {
     readVarint,
+    readVarintAndLength,
     readFixed32,
     readFixed64,
     readLengthDelimited,

@@ -1488,6 +1488,7 @@ Long.fromBytesBE = function fromBytesBE(bytes, unsigned) {
 /***/ (function(module, exports, __webpack_require__) {
 
 var _require = __webpack_require__(4),
+    readVarintAndLength = _require.readVarintAndLength,
     readVarint = _require.readVarint;
 
 var _require2 = __webpack_require__(7),
@@ -1608,6 +1609,13 @@ function _readVarint(bytes) {
   return readVarint(offset, bytes).toLong();
 }
 
+function _readVarintAndLength(bytes) {
+  var offset = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : 0;
+  var ret = readVarintAndLength(offset, bytes);
+  ret[0] = ret[0].toLong();
+  return ret;
+}
+
 function writeVarint(number) {
   var ret = [];
   var obj = {
@@ -1627,6 +1635,7 @@ function writeVarint(number) {
 module.exports = {
   keyByMultiple: keyByMultiple,
   readVarint: _readVarint,
+  readVarintAndLength: _readVarintAndLength,
   writeVarint: writeVarint,
   toByteArray: toByteArray,
   fromByteArray: fromByteArray,
@@ -1791,6 +1800,12 @@ function lazyReadVarint() {
 
 function readVarint(offset, data) {
   var length = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : data.length;
+  return readVarintAndLength(offset, data, length)[0];
+}
+
+function readVarintAndLength(offset, data) {
+  var length = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : data.length;
+  var start = offset;
   var ret = new LongBits(0, 0);
   var i = 0;
 
@@ -1799,7 +1814,7 @@ function readVarint(offset, data) {
       ret.lo = (ret.lo | (data[offset] & 0x7f) << i * 7) >>> 0;
 
       if (data[offset++] < 0x80) {
-        return ret;
+        return [ret, offset - start];
       }
     }
 
@@ -1807,7 +1822,7 @@ function readVarint(offset, data) {
     ret.hi = (ret.hi | (data[offset] & 0x7f) >> 4) >>> 0;
 
     if (data[offset++] < 0x80) {
-      return ret;
+      return [ret, offset - start];
     }
 
     i = 0;
@@ -1820,12 +1835,12 @@ function readVarint(offset, data) {
       ret.lo = (ret.lo | (data[offset] & 0x7f) << i * 7) >>> 0;
 
       if (data[offset++] < 0x80) {
-        return ret;
+        return [ret, offset - start];
       }
     }
 
     ret.lo = (ret.lo | (data[offset] & 0x7f) << i * 7) >>> 0;
-    return ret;
+    return [ret, offset - start];
   }
 
   if (length - offset > 4) {
@@ -1833,7 +1848,7 @@ function readVarint(offset, data) {
       ret.hi = (ret.hi | (data[offset] & 0x7f) << i * 7 + 3) >>> 0;
 
       if (data[offset++] < 0x80) {
-        return ret;
+        return [ret, offset - start];
       }
     }
   } else {
@@ -1845,7 +1860,7 @@ function readVarint(offset, data) {
       ret.hi = (ret.hi | (data[offset] & 0x7f) << i * 7 + 3) >>> 0;
 
       if (data[offset++] < 0x80) {
-        return ret;
+        return [ret, offset - start];
       }
     }
   }
@@ -1880,6 +1895,7 @@ function readLengthDelimited() {
 
 module.exports = {
   readVarint: readVarint,
+  readVarintAndLength: readVarintAndLength,
   readFixed32: readFixed32,
   readFixed64: readFixed64,
   readLengthDelimited: readLengthDelimited,
