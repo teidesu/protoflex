@@ -14,8 +14,7 @@ There were 2 main reasons for creating Protoflex:
 
 So, Protoflex does its best to fit them both. 
 
-**WARNING**: this library is in early development stage and may contain 
-bugs, thus **not recommended for production apps**
+**WARNING**: this library is **not recommended for production apps**
 
 # Quick start:
 ## Reading (deserializing)
