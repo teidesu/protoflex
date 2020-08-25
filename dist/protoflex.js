@@ -1604,7 +1604,8 @@ function fromByteArray(bytes) {
 }
 
 function _readVarint(bytes) {
-  return readVarint(0, bytes).toLong();
+  var offset = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : 0;
+  return readVarint(offset, bytes).toLong();
 }
 
 function writeVarint(number) {
