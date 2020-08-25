@@ -108,8 +108,8 @@ function fromByteArray (bytes, start = 0, end = bytes.length) {
     return out.join('')
 }
 
-function _readVarint (bytes) {
-    return readVarint(0, bytes).toLong()
+function _readVarint (bytes, offset = 0) {
+    return readVarint(offset, bytes).toLong()
 }
 
 function writeVarint (number) {
