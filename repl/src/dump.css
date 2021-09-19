@@ -1,0 +1,59 @@
+.protoflex-dump {
+    margin: 8px;
+}
+
+.protoflex-dump-header {
+    font-size: 14px;
+}
+
+.protoflex-dump-field {
+    border-bottom: 1px solid #dbdbdb;
+    margin: 6px 0;
+}
+
+.protoflex-dump-field:last-child {
+    border-bottom: none;
+}
+
+.protoflex-dump-header__key, .protoflex-dump-header__index {
+    font-weight: 700;
+}
+
+.protoflex-dump-type {
+    font-size: 13px;
+    font-style: italic;
+}
+
+.protoflex-dump-subtype {
+    font-size: 14px;
+    margin: 2px 0;
+}
+
+.protoflex-dump-type__primitive, .protoflex-dump-type__possibles, .protoflex-dump-subtype__type, .protoflex-dump-subtype:not([data-subtype=message]) .protoflex-dump-subtype__value {
+    font-family: monospace;
+    background: #f1f1f1;
+    padding: 2px 4px;
+    border-radius: 4px;
+    display: inline-block;
+    word-break: break-all;
+    line-height: 14px;
+}
+
+.protoflex-dump-subtype:not([data-subtype=message]) .protoflex-dump-subtype__value {
+    background: #e6ffe6;
+}
+
+.protoflex-dump-subtype__error {
+    font-family: monospace;
+    background: #ffe6e6;
+    padding: 2px 4px;
+    border-radius: 4px;
+    display: inline-block;
+    font-size: 12px;
+    word-break: break-all;
+    line-height: 14px;
+}
+
+.protoflex-dump-subtype, .protoflex-dump-type, .protoflex-dump-subtype[data-subtype=packed], .protoflex-dump .protoflex-dump, .protoflex-dump .protoflex-dump .protoflex-dump-field {
+    margin-left: 16px;
+}
